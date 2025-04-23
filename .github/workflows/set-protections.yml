@@ -40,6 +40,7 @@ jobs:
               "strict": true,
               "contexts": ["deploy","prerelease","test","code-style"]
             },
+            "enforce_admins": false,
             "required_pull_request_reviews": {
               "dismiss_stale_reviews": true,
               "required_approving_review_count": 1
@@ -59,6 +60,7 @@ jobs:
               "strict": true,
               "contexts": ["test","code-style"]
             },
+            "enforce_admins": false,
             "required_pull_request_reviews": {
               "dismiss_stale_reviews": true,
               "required_approving_review_count": 1
@@ -101,20 +103,37 @@ jobs:
               --input - <<<"$PAYLOAD_USER"
           fi
 
-      # 7) Protect feature-* via GraphQL
+      # 7) Protect feature-* via GraphQL with org/user fallback
       - name: Configure feature-* branch protection
         run: |
           repo_node_id=$(gh api /repos/${{ github.repository }} | jq -r .node_id)
-          gh api graphql -f query='
-            mutation($repositoryId: ID!, $pattern: String!) {
-              createBranchProtectionRule(input: {
-                repositoryId: $repositoryId,
-                pattern: $pattern,
-                allowsForcePushes: true,
-                allowsDeletions: true
-              }) {
-                clientMutationId
-              }
-            }' \
-            -F repositoryId="$repo_node_id" \
-            -F pattern="feature-*"
+
+          # Try org-style (restrict pushes) first
+          if gh api graphql \
+               -f query='mutation($repositoryId: ID!, $pattern: String!) {
+                 createBranchProtectionRule(input: {
+                   repositoryId: $repositoryId,
+                   pattern: $pattern,
+                   allowsForcePushes: true,
+                   allowsDeletions: true,
+                   restrictsPushes: true
+                 }) { clientMutationId }
+               }' \
+               -F repositoryId="$repo_node_id" \
+               -F pattern="feature-*"; then
+            echo "feature-* protected with restrictions"
+          else
+            echo "feature-* fallback to no restrictions"
+            # Fallback for user repos (no restrictsPushes)
+            gh api graphql \
+              -f query='mutation($repositoryId: ID!, $pattern: String!) {
+                createBranchProtectionRule(input: {
+                  repositoryId: $repositoryId,
+                  pattern: $pattern,
+                  allowsForcePushes: true,
+                  allowsDeletions: true
+                }) { clientMutationId }
+              }' \
+              -F repositoryId="$repo_node_id" \
+              -F pattern="feature-*"
+          fi
