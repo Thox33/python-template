@@ -1,4 +1,4 @@
-name: docs
+name: Docs
 on:
   push:
     branches: [ main ]
@@ -58,7 +58,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         if: github.ref == 'refs/heads/main'
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GH_TOKEN }}
           publish_dir: ./docs/build/html
           publish_branch: docs
           user_name: 'github-actions'

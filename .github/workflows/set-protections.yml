@@ -15,7 +15,7 @@ jobs:
         uses: cli/gh-action@v2
 
       - name: Authenticate
-        run: gh auth login --with-token <<< "${{ secrets.GH_ADMIN_TOKEN }}"
+        run: gh auth login --with-token <<< "${{ secrets.GH_TOKEN }}"
 
       - name: Configure Main Branch
         run: |

@@ -12,10 +12,13 @@ jobs:
         with:
           ref: develop
 
-      - name: Create main branch from develop
+      - name: Set up Git with PAT
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
 
+      - name: Create main branch from develop
+        run: |
           git checkout -b main
           git push origin main
