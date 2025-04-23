@@ -1,0 +1,50 @@
+name: Setup – Branch Protections
+
+on:
+  workflow_dispatch:
+
+jobs:
+  set-protections:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Install GitHub CLI
+        uses: cli/gh-action@v2
+
+      - name: Authenticate
+        run: gh auth login --with-token <<< "${{ secrets.GH_ADMIN_TOKEN }}"
+
+      - name: Configure Main Branch
+        run: |
+          gh api --method PUT /repos/${{ github.repository }}/branches/main/protection \
+            --input - <<EOF
+          {
+            "required_status_checks": {
+              "strict": true,
+              "contexts": ["deploy", "prerelease", "test", "code-style"]
+            },
+            "enforce_admins": true,
+            "required_pull_request_reviews": {
+              "dismiss_stale_reviews": true,
+              "required_approving_review_count": 1
+            },
+            "restrictions": null,
+            "required_conversation_resolution": true
+          }
+          EOF
+
+      - name: Configure Feature Branches via GraphQL
+        run: |
+          repo_id=$(gh api "/repos/${{ github.repository }}" | jq -r .id)
+          gh api graphql -F owner="${{ github.repository_owner }}" -F repo="${{ github.event.repository.name }}" -F pattern="feature-*" -f query="
+            mutation(\$owner: String!, \$repo: String!, \$pattern: String!) {
+              createBranchProtectionRule(input: {
+                repositoryId: \"$repo_id\",
+                pattern: \$pattern,
+                allowsForcePushes: true,
+                allowsDeletions: true
+              }) { clientMutationId }
+            }"

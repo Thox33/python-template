@@ -1,23 +1,106 @@
 # Boilerplate Python
 
-How to use this boilerplate with github:
+## 🔧 How to use this boilerplate with GitHub
 
-1. Clone the repository
-2. Create the branch main (git checkout -b main)
-3. Create the branch docs (git checkout -b docs)
-4. Add branch protection rules inside the repository settings
-Rule: main Options: "Require a pull request before merging" "Dismiss stale pull request approvals when new commits are pushed" "Require status checks to pass before merging" "Require branches to be up to date before merging" "Status checks that are required: deploy prerelease test code-style" "Require conversation resolution before merging"
-Rule: develop Options: "Require a pull request before merging" "Dismiss stale pull request approvals when new commits are pushed" "Require status checks to pass before merging" "Status checks that are required: test code-style" "Require conversation resolution before merging" "Restrict who can push to matching branches: People, teams, or apps with push access"
-Rule: feature-* Options: "Restrict who can push to matching branches: People, teams, or apps with push access" "Allow force pushes: Everyone" "Allow deletions"
-Rule: docs Options: None
-5. Add protected tags inside the repository settings
-Rule: v*
-6. If you want to use SonarCloud: make sure to add the mandatory environment variables inside the repository settings SONAR_TOKEN, adjust the sonar-project.properties file and enable it inside the workflows tests.yml and release.yml
-7. If you want to use Dependabot: make sure to enable it inside the security menu
-8. If you want to use Semantic-Release: make sure to add the mandatory environment variables inside the repository settings RELEASE_TOKEN which is an PAT for pushing to the releases inside github with push and tagging rights
-9. Make sure to adjust the General settings inside the repository settings:
-"Always suggest updating pull request branches"
-"Allow auto-merge"
-"Automatically delete head branches"
-10. Next adjust the name boilerplate_python and boilerplate-python in all relevant files and filenames
-11. Last update this README.md file with the correct information using the README_EXAMPLE.md file
+1. **Create a new repository using this template.**  
+   Click on **"Use this template"** → **"Create a new repository"** in the top-right corner.
+
+
+2. **Generate a Personal Access Token (PAT)**
+
+   You will need this token to set branch protection rules and to set up Semantic Releases via GitHub Actions.
+
+   #### 🔑 How to create the token:
+   1. Go to [https://github.com/settings/tokens](https://github.com/settings/tokens)
+   2. Click **"Generate new token (classic)"**
+   3. Provide a name, e.g., `boilerplate-setup`
+   4. Set the **expiration date** 
+   5. Enable the following permissions:
+     - `repo` (full control of private repositories)
+     - `admin:repo_hook` (required to set branch protection rules)
+
+   6. Click **"Generate token"**
+   7. Copy the token immediately, as it will only be shown once!
+
+   #### 🔐 Save the token as a Secret:
+   1. Go to your new repository on **Settings** → **Secrets and variables** → **Actions**
+   2. Click **"New repository secret"**
+   3. Name: `RELEASE_TOKEN`
+   4. Value: (paste the copied token here)
+   5. Save it by clicking **"Add secret"**
+
+
+3. **Initial Setup via GitHub Actions**
+
+   This repository includes two workflows to set up your project automatically:
+
+  - `create-main.yml`: Creates the `main` branch
+  - `set-protections.yml`: Configures branch protection rules and tag protection
+
+4. **Branch Protection Rules**
+
+   You can set the branch protection rules either manually or automatically using the `set-protections.yml` GitHub Action.
+
+   #### `main` branch
+  - Require a pull request before merging
+  - Dismiss stale pull request approvals when new commits are pushed
+  - Require status checks to pass before merging:
+    - `deploy`, `prerelease`, `test`, `code-style`
+  - Require branches to be up to date before merging
+  - Require conversation resolution before merging
+
+   #### `develop` branch
+  - Require a pull request before merging
+  - Dismiss stale pull request approvals when new commits are pushed
+  - Require status checks to pass before merging:
+    - `test`, `code-style`
+  - Require conversation resolution before merging
+  - Restrict who can push to matching branches: **people, teams, or apps with push access**
+
+   #### `feature-*` branches
+  - Restrict who can push to matching branches: **people, teams, or apps with push access**
+  - Allow force pushes
+  - Allow deletions
+
+5. **Add Protected Tags Inside Repository Settings**
+  - Rule: `v*` (for version tags)
+
+6. **Enable Dependabot** (if needed)
+  - Enable Dependabot in the **Security** tab of your repository.
+
+7. **Set up Semantic Release** (optional)
+  - Add the required environment variables in the repository settings:
+    - `RELEASE_TOKEN` (a PAT for pushing releases with push and tagging rights)
+  - Ensure the appropriate configuration in the workflow files.
+
+8. **Adjust General Repository Settings**
+  - Ensure the following options are enabled in **Settings** → **General**:
+    - "Always suggest updating pull request branches"
+    - "Allow auto-merge"
+    - "Automatically delete head branches"
+
+9. **Rename Boilerplate Files**
+  - Change instances of `boilerplate_python` and `boilerplate-python` in all relevant files and filenames.
+
+10. **Update README**
+  - Update this README file with the correct information, using the `README_EXAMPLE.md` file as a guide.
+
+---
+
+### 🧑‍💻 Triggering GitHub Actions
+
+To trigger the workflows:
+
+- The **`create-main.yml`** will run automatically when the repository is created. It will create the `main` branch.
+- The **`set-protections.yml`** workflow can be triggered manually via the GitHub Actions tab in your repository.
+
+#### How to trigger the Action manually:
+
+1. Go to the **Actions** tab in your GitHub repository.
+2. Find the **`set-protections.yml`** workflow.
+3. Click on it, then click **"Run workflow"** on the right side.
+4. Select the branch (typically `main`) and click **"Run workflow"**.
+
+This will execute the action that sets the branch protection rules and protected tags.
+
+---
