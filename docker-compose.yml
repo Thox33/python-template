@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  docs:
+    build: .
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./docs:/usr/src/app/docs
+      - ./boilerplate_python:/usr/src/app/template_python
+      - ./README.md:/usr/src/app/README.md
+    ports:
+      - "5500:5500"
+    command: python docs/docs_livereload.py
+
+  tests:
+    build: .
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./boilerplate_python:/usr/src/app/template_python
+      - ./tests:/usr/src/app/tests
+      - ./README.md:/usr/src/app/README.md
+      - ./.coveragerc:/usr/src/app/.coveragerc
+      - ./pytest.ini:/usr/src/app/pytest.ini
+      - ./setup.json:/usr/src/app/setup.json
+    command: pytest-watch -n -p
