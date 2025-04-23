@@ -3,28 +3,82 @@ name: Setup – Branch Protections
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+  id-token: write
+
 jobs:
   set-protections:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
 
     steps:
-      - name: Install GitHub CLI
-        uses: cli/gh-action@v2
+      # 1) Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Authenticate
-        run: gh auth login --with-token <<< "${{ secrets.GH_TOKEN }}"
+      # 2) Install GH CLI & jq
+      - name: Install GitHub CLI & jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh jq
 
-      - name: Configure Main Branch
+      # 3) Verify installation
+      - name: Verify GH CLI version
+        run: gh --version
+
+      # 4) Authenticate
+      - name: Authenticate GitHub CLI
+        run: echo "${{ secrets.GH_TOKEN }}" | gh auth login --with-token
+
+      # 5) Protect main
+      - name: Configure main branch protection
         run: |
           gh api --method PUT /repos/${{ github.repository }}/branches/main/protection \
             --input - <<EOF
           {
             "required_status_checks": {
               "strict": true,
-              "contexts": ["deploy", "prerelease", "test", "code-style"]
+              "contexts": ["deploy","prerelease","test","code-style"]
+            },
+            "required_pull_request_reviews": {
+              "dismiss_stale_reviews": true,
+              "required_approving_review_count": 1
+            },
+            "restrictions": null,
+            "required_conversation_resolution": true
+          }
+          EOF
+
+      # 6) Protect develop with fallback for user repos
+      - name: Configure develop branch protection
+        run: |
+          # --- payload with restrictions (for org repos) ---
+          PAYLOAD_ORG=$(cat <<EOF
+          {
+            "required_status_checks": {
+              "strict": true,
+              "contexts": ["test","code-style"]
+            },
+            "required_pull_request_reviews": {
+              "dismiss_stale_reviews": true,
+              "required_approving_review_count": 1
+            },
+            "restrictions": {
+              "users": [],
+              "teams": [],
+              "apps": []
+            },
+            "required_conversation_resolution": true
+          }
+          EOF
+          )
+
+          # --- payload without restrictions (for user repos) ---
+          PAYLOAD_USER=$(cat <<EOF
+          {
+            "required_status_checks": {
+              "strict": false,
+              "contexts": ["test","code-style"]
             },
             "enforce_admins": true,
             "required_pull_request_reviews": {
@@ -35,16 +89,32 @@ jobs:
             "required_conversation_resolution": true
           }
           EOF
+          )
 
-      - name: Configure Feature Branches via GraphQL
+          # Try org-style first, fallback to user-style on 422
+          if gh api --method PUT /repos/${{ github.repository }}/branches/develop/protection \
+               --input - <<<"$PAYLOAD_ORG"; then
+            echo "develop protected with restrictions"
+          else
+            echo "develop fallback to no restrictions"
+            gh api --method PUT /repos/${{ github.repository }}/branches/develop/protection \
+              --input - <<<"$PAYLOAD_USER"
+          fi
+
+      # 7) Protect feature-* via GraphQL
+      - name: Configure feature-* branch protection
         run: |
-          repo_id=$(gh api "/repos/${{ github.repository }}" | jq -r .id)
-          gh api graphql -F owner="${{ github.repository_owner }}" -F repo="${{ github.event.repository.name }}" -F pattern="feature-*" -f query="
-            mutation(\$owner: String!, \$repo: String!, \$pattern: String!) {
+          repo_node_id=$(gh api /repos/${{ github.repository }} | jq -r .node_id)
+          gh api graphql -f query='
+            mutation($repositoryId: ID!, $pattern: String!) {
               createBranchProtectionRule(input: {
-                repositoryId: \"$repo_id\",
-                pattern: \$pattern,
+                repositoryId: $repositoryId,
+                pattern: $pattern,
                 allowsForcePushes: true,
                 allowsDeletions: true
-              }) { clientMutationId }
-            }"
+              }) {
+                clientMutationId
+              }
+            }' \
+            -F repositoryId="$repo_node_id" \
+            -F pattern="feature-*"

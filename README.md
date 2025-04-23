@@ -17,7 +17,8 @@
    4. Set the **expiration date** 
    5. Enable the following permissions:
      - `repo` (full control of private repositories)
-     - `admin:repo_hook` (required to set branch protection rules)
+     - `admin:repo_hook` (required to set branch protection rules)admin:org
+     - `admin:org` -> `read:org`  (required to set branch protection rules)
 
    6. Click **"Generate token"**
    7. Copy the token immediately, as it will only be shown once!

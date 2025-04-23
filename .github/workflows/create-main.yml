@@ -6,19 +6,17 @@ on:
 jobs:
   create-main:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout develop
         uses: actions/checkout@v4
         with:
           ref: develop
-
-      - name: Set up Git with PAT
+          token: ${{ secrets.GH_TOKEN }}
+      - name: Create main branch
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
-
-      - name: Create main branch from develop
-        run: |
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b main
-          git push origin main
+          git push https://${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git main
