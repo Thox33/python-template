@@ -2,7 +2,7 @@
 
 ## 🔧 How to use this template with GitHub
 
-1. **Create a new repository using this template.**  
+1. **Create a new repository using this template.**
    Click on **"Use this template"** → **"Create a new repository"** in the top-right corner.
 
 
@@ -14,7 +14,7 @@
    1. Go to [https://github.com/settings/tokens](https://github.com/settings/tokens)
    2. Click **"Generate new token (classic)"**
    3. Provide a name, e.g., `boilerplate-setup`
-   4. Set the **expiration date** 
+   4. Set the **expiration date**
    5. Enable the following permissions:
      - `repo` (full control of private repositories)
      - `admin:repo_hook` (required to set branch protection rules)
@@ -30,13 +30,13 @@
    4. Value: (paste the copied token here)
    5. Save it by clicking **"Add secret"**
 
-3. **Initial Setup**  
+3. **Initial Setup**
    You can configure your repository **either manually** or **automatically via GitHub Actions**.
 
    3.1 **Via Actions**
-    1. Go to **Actions** → **Setup – Create main branch** → **Run workflow**  
+    1. Go to **Actions** → **Setup – Create main branch** → **Run workflow**
        This will create the `main` branch from `develop`.
-    2. Go to **Actions** → **Setup – Branch Protections** → **Run workflow**  
+    2. Go to **Actions** → **Setup – Branch Protections** → **Run workflow**
        This will configure all branch protection rules and protected tags.
 
    3.2 **Manually**
@@ -45,7 +45,7 @@
        git checkout develop
        git checkout -b main
        git push origin main
-       ```  
+       ```
     2. **Set up branch protection rules** in **Settings → Branch protection rules**:
         - **`main` branch**
             - Require a pull request before merging
@@ -86,6 +86,3 @@
 
 9. **Update README**
   - Update this README file with the correct information, using the `README_EXAMPLE.md` file as a guide.
-
-
-
