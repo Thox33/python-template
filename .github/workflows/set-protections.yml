@@ -1,4 +1,4 @@
-name: Setup – Branch Protections
+name: Setup – Protections and Settings
 
 on:
   workflow_dispatch:
@@ -205,3 +205,21 @@ jobs:
               fi
             fi
           fi
+      # 9) Configure repository settings
+      - name: Configure repository settings
+        run: |
+          REPO="${{ github.repository }}"
+          echo "Configuring repository settings..."
+
+          # Update repository settings via API
+          gh api --method PATCH "/repos/$REPO" \
+            --input - <<-EOF
+          {
+            "allow_merge_commit": true,
+            "allow_auto_merge": true,
+            "delete_branch_on_merge": true,
+            "allow_update_branch": true
+          }
+          EOF
+
+          echo "Repository settings updated successfully"

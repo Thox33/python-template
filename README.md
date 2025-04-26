@@ -36,8 +36,8 @@
    3.1 **Via Actions**
     1. Go to **Actions** → **Setup – Create main branch** → **Run workflow**
        This will create the `main` branch from `develop`.
-    2. Go to **Actions** → **Setup – Branch Protections** → **Run workflow**
-       This will configure all branch protection rules and protected tags.
+    2. Go to **Actions** → **Setup – Protections and Settings** → **Run workflow**
+       This will configure all branch protection rules, protected tags and project settings.
 
    3.2 **Manually**
     1. **Create the `main` branch** from `develop`:
@@ -70,23 +70,19 @@
        - **Rules → Tag rules**: Enable:
            - ☑️ Restrict updates
            - ☑️ Restrict deletions
+   4. **Adjust General Repository Settings**  in **Settings → General**
+      - ☑️ "Always suggest updating pull request branches"
+      - ☑️ "Allow auto-merge"
+      - ☑️ "Automatically delete head branches"
 
 4. **Dependabot** (optional)
-  - Enable Dependabot in the **Security** tab of your repository.
+   - Enable Dependabot in the **Security** tab of your repository.
 
 5. **Set up Semantic Release** (optional)
-  - Add the required environment variables in the repository settings:
-    - `GH_TOKEN` (a PAT for pushing releases with push and tagging rights)
-  - Ensure the appropriate configuration in the workflow files.
+   - Ensure the appropriate configuration in the workflow files.
 
-6. **Adjust General Repository Settings**
-  - Ensure the following options are enabled in **Settings** → **General**:
-    - "Always suggest updating pull request branches"
-    - "Allow auto-merge"
-    - "Automatically delete head branches"
+6. **Rename Boilerplate Files**
+   - Change instances of `boilerplate_python` and `boilerplate-python` in all relevant files and filenames.
 
-7. **Rename Boilerplate Files**
-  - Change instances of `boilerplate_python` and `boilerplate-python` in all relevant files and filenames.
-
-8. **Update README**
-  - Update this README file with the correct information, using the `README_EXAMPLE.md` file as a guide.
+7. **Update README**
+   - Update this README file with the correct information, using the `README_EXAMPLE.md` file as a guide.
