@@ -125,11 +125,10 @@ jobs:
       #----------------------------------------------
       #        Create sync PR main→develop
       #----------------------------------------------
-      - name: Create sync PR main→develop
-        id: create_sync_pr
+      - name: Create PR from main to develop
+        id: create_pr_main_to_develop
         uses: peter-evans/create-pull-request@v7
         with:
-          branch: sync/main-to-develop
           base: develop
           head: main
           title: 'chore(release): sync version bump from main'
