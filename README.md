@@ -63,26 +63,30 @@
             - Restrict who can push: **people, teams, or apps with push access**
             - Allow force pushes
             - Allow deletions
+   3. **Protect version tags** in **Settings → Rules → New ruleset → New tag ruleset**:
+       - **Ruleset Name**: "Protect v* tags"
+       - **Enforcement status**: Active
+       - **Target → Add target → Include by pattern**: `v*`
+       - **Rules → Tag rules**: Enable:
+           - ☑️ Restrict updates
+           - ☑️ Restrict deletions
 
-4. **Add Protected Tags Inside Repository Settings**
-  - Rule: `v*` (for version tags)
-
-5. **Enable Dependabot** (if needed)
+4. **Dependabot** (optional)
   - Enable Dependabot in the **Security** tab of your repository.
 
-6. **Set up Semantic Release** (optional)
+5. **Set up Semantic Release** (optional)
   - Add the required environment variables in the repository settings:
     - `GH_TOKEN` (a PAT for pushing releases with push and tagging rights)
   - Ensure the appropriate configuration in the workflow files.
 
-7. **Adjust General Repository Settings**
+6. **Adjust General Repository Settings**
   - Ensure the following options are enabled in **Settings** → **General**:
     - "Always suggest updating pull request branches"
     - "Allow auto-merge"
     - "Automatically delete head branches"
 
-8. **Rename Boilerplate Files**
+7. **Rename Boilerplate Files**
   - Change instances of `boilerplate_python` and `boilerplate-python` in all relevant files and filenames.
 
-9. **Update README**
+8. **Update README**
   - Update this README file with the correct information, using the `README_EXAMPLE.md` file as a guide.

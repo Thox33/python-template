@@ -108,32 +108,100 @@ jobs:
         run: |
           repo_node_id=$(gh api /repos/${{ github.repository }} | jq -r .node_id)
 
-          # Try org-style (restrict pushes) first
-          if gh api graphql \
-               -f query='mutation($repositoryId: ID!, $pattern: String!) {
-                 createBranchProtectionRule(input: {
-                   repositoryId: $repositoryId,
-                   pattern: $pattern,
-                   allowsForcePushes: true,
-                   allowsDeletions: true,
-                   restrictsPushes: true
-                 }) { clientMutationId }
-               }' \
-               -F repositoryId="$repo_node_id" \
-               -F pattern="feature-*"; then
-            echo "feature-* protected with restrictions"
-          else
-            echo "feature-* fallback to no restrictions"
-            # Fallback for user repos (no restrictsPushes)
-            gh api graphql \
-              -f query='mutation($repositoryId: ID!, $pattern: String!) {
+          create_rule() {
+            local restriction=$1
+            local query
+            if [ "$restriction" = "restrict" ]; then
+              query='mutation($repositoryId: ID!, $pattern: String!) {
+                createBranchProtectionRule(input: {
+                  repositoryId: $repositoryId,
+                  pattern: $pattern,
+                  allowsForcePushes: true,
+                  allowsDeletions: true,
+                  restrictsPushes: true
+                }) { clientMutationId }
+              }'
+            else
+              query='mutation($repositoryId: ID!, $pattern: String!) {
                 createBranchProtectionRule(input: {
                   repositoryId: $repositoryId,
                   pattern: $pattern,
                   allowsForcePushes: true,
                   allowsDeletions: true
                 }) { clientMutationId }
-              }' \
-              -F repositoryId="$repo_node_id" \
-              -F pattern="feature-*"
+              }'
+            fi
+
+            output=$(gh api graphql -f query="$query" -F repositoryId="$repo_node_id" -F pattern="feature-*" 2>&1)
+            exit_code=$?
+            if [ $exit_code -eq 0 ]; then
+              echo "feature-* protected with $restriction"
+              return 0
+            else
+              if echo "$output" | grep -q "Name already protected"; then
+                echo "feature-* protection already exists. Skipping."
+                return 0
+              else
+                echo "Error creating rule with $restriction: $output"
+                return $exit_code
+              fi
+            fi
+          }
+
+          if ! create_rule "restrict"; then
+            echo "Trying fallback without restrictsPushes..."
+            create_rule "no-restrict"
+          fi
+      # 8) Protect v* tags
+      - name: Configure protected tags (v*)
+        run: |
+          REPO="${{ github.repository }}"
+          TAG_PATTERN="refs/tags/v*"
+          RULESET_NAME="Protect v* tags"
+
+          # Simplify checking for existing ruleset
+          echo "Checking for existing ruleset '$RULESET_NAME'..."
+          EXISTING_RULESETS=$(gh api "/repos/$REPO/rulesets" --jq '.[]')
+
+          # Check if a ruleset with the same name already exists
+          if echo "$EXISTING_RULESETS" | jq -e --arg name "$RULESET_NAME" 'select(.name == $name)' > /dev/null; then
+            echo "Ruleset '$RULESET_NAME' already exists"
+            echo "Skipping creation"
+          else
+            echo "Creating ruleset '$RULESET_NAME'..."
+            PAYLOAD=$(cat <<-EOF
+          {
+            "name": "$RULESET_NAME",
+            "target": "tag",
+            "enforcement": "active",
+            "conditions": {
+              "ref_name": {
+                "include": ["$TAG_PATTERN"],
+                "exclude": []
+              }
+            },
+            "rules": [
+              {"type": "update"},
+              {"type": "deletion"}
+            ]
+          }
+          EOF
+            )
+
+            output=$(gh api --method POST "/repos/$REPO/rulesets" --input - <<<"$PAYLOAD" 2>&1)
+
+            if [ $? -eq 0 ]; then
+              echo "Ruleset created successfully"
+            else
+              # Handle "name must be unique" error gracefully
+              if echo "$output" | grep -q -i "name must be unique\|already exists"; then
+                echo "Ruleset with name '$RULESET_NAME' already exists"
+                echo "This is expected if the ruleset was created in a previous run"
+                # Don't exit with error for this case
+              else
+                echo "Failed to create ruleset:"
+                echo "$output"
+                exit 1
+              fi
+            fi
           fi
