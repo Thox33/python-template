@@ -51,7 +51,7 @@ jobs:
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction
       #----------------------------------------------
-      #  run pre-commit, tests and sonarcloud scan
+      #  run pre-commit and tests
       #----------------------------------------------
       - name: Run pre-commit
         run: |
@@ -122,3 +122,25 @@ jobs:
           TAG=$(semantic-release version --print)
           semantic-release version
           semantic-release publish --tag "v${TAG}"
+      #----------------------------------------------
+      #        Create sync PR main→develop
+      #----------------------------------------------
+      - name: Create sync PR main→develop
+        id: create_sync_pr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          branch: sync/main-to-develop
+          base: develop
+          head: main
+          title: 'chore(release): sync version bump from main'
+          body: |
+            This PR brings the version bump committed by the release workflow
+            back into the develop branch.
+          commit-message: 'chore: sync version bump from main'
+          labels: |
+            automation
+            sync
+          # hier kommt das magic flag:
+          auto-merge: true
+          auto-merge-method: squash   # merge | squash | rebase
+          token: ${{ secrets.GH_TOKEN }}
