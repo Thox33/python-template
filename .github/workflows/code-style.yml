@@ -1,11 +1,13 @@
 name: Code-Styles
-on: pull_request
+on:
+  pull_request_target:
+    branches: [main, develop]
 jobs:
   code-style:
     runs-on: ubuntu-latest
     steps:
       #----------------------------------------------
-      #   check-out repo, set-up python and nodejs
+      #   check-out repo and set-up python
       #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v4
