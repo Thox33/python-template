@@ -129,7 +129,7 @@ jobs:
         run: |
           PR_EXISTS=$(gh pr list --base develop --head main --state open --json number --jq '.[0].number')
           if [ -z "$PR_EXISTS" ]; then
-            gh pr create --base develop --head main --title "chore(release): sync version bump from main" --body "This PR brings the version bump committed by the release workflow back into the develop branch." --label "automation, sync"
+            gh pr create --base develop --head main --title "chore(release): sync version bump from main" --body "This PR brings the version bump committed by the release workflow back into the develop branch." --label "automation,sync"
           else
             echo "PR already exists. Skipping PR creation."
           fi
