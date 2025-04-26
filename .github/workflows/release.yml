@@ -127,7 +127,7 @@ jobs:
       #----------------------------------------------
       - name: Create sync PR main→develop
         id: create_sync_pr
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
           branch: sync/main-to-develop
           base: develop
