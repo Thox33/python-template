@@ -137,10 +137,7 @@ jobs:
             This PR brings the version bump committed by the release workflow
             back into the develop branch.
           commit-message: 'chore: sync version bump from main'
-          labels: |
-            automation
-            sync
-          # hier kommt das magic flag:
+          labels: automation, sync
           auto-merge: true
-          auto-merge-method: squash   # merge | squash | rebase
+          auto-merge-method: squash
           token: ${{ secrets.GH_TOKEN }}
