@@ -36,7 +36,7 @@ bandit = { extras = ["toml"], version = "1.8.3" }
 pytest-mock = "3.14.0"
 pyfakefs = "5.8.0"
 enum-tools = { extras = ["sphinx"], version = "0.13.0" }
-ruff = "^0.11.6"
+ruff = "^0.11.7"
 
 [build-system]
 requires = ["poetry-core>=1.6.1"]
