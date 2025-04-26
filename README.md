@@ -34,10 +34,9 @@
    You can configure your repository **either manually** or **automatically via GitHub Actions**.
 
    3.1 **Via Actions**
-    1. Go to **Actions** → **Setup – Create main branch** → **Run workflow**
-       This will create the `main` branch from `develop`.
-    2. Go to **Actions** → **Setup – Protections and Settings** → **Run workflow**
-       This will configure all branch protection rules, protected tags and project settings.
+    1. Go to **Actions** → **Setup Repository** → **Run workflow**
+       - This will create the `main` branch from `develop`.
+       - This will configure all branch protection rules, protected tags and project settings.
 
    3.2 **Manually**
     1. **Create the `main` branch** from `develop`:
