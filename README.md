@@ -50,7 +50,7 @@
         - **`main` branch**
             - Require a pull request before merging
             - Dismiss stale pull request approvals when new commits are pushed
-            - Require status checks to pass before merging (`deploy`, `prerelease`, `test`, `code-style`)
+            - Require status checks to pass before merging (`prerelease`, `test`, `code-style`)
             - Require branches to be up to date before merging
             - Require conversation resolution before merging
         - **`develop` branch**
