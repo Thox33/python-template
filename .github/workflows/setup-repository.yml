@@ -25,8 +25,11 @@ jobs:
           find . -type f -not -path "./.git/*" -exec sed -i "s/boilerplate-python/${PROJECT_NAME}/g" {} +
           find . -type f -not -path "./.git/*" -exec sed -i "s/boilerplate_python/${PROJECT_NAME_SNAKE_CASE}/g" {} +
 
-          if [ -d "boilerplate_python" ]; then
-            mv boilerplate_python "${PROJECT_NAME_SNAKE_CASE}"
+          if [ -d "boilerplate_python" ] && [ "$PROJECT_NAME_SNAKE_CASE" != "boilerplate_python" ]; then
+            echo "Renaming directory 'boilerplate_python' to '$PROJECT_NAME_SNAKE_CASE'"
+            mv "boilerplate_python" "$PROJECT_NAME_SNAKE_CASE"
+          else
+            echo "Skipping rename, either 'boilerplate_python' does not exist or the target name is the same."
           fi
 
           if git diff --quiet; then
