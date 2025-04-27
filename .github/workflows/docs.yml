@@ -1,65 +1,72 @@
 name: Docs
+
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
     paths:
       - 'docs/**'
+
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    concurrency:
+      group: docs-deploy
+      cancel-in-progress: true
+
     steps:
-      #----------------------------------------------
-      #   check-out repo, set-up python and nodejs
-      #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Set up python
-        id: setup-python
+
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
-      #----------------------------------------------
-      #        install & configure poetry
-      #----------------------------------------------
+          python-version: '3.11'
+
       - name: Install and configure Poetry
         uses: snok/install-poetry@v1
         with:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
-      #----------------------------------------------
-      #       load cached venv if cache exists
-      #----------------------------------------------
-      - name: Load cached venv
-        id: cached-poetry-dependencies
+
+      - name: Cache Poetry virtualenv
         uses: actions/cache@v4
         with:
           path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
-      #----------------------------------------------
-      # install dependencies if cache does not exist
-      #----------------------------------------------
+          key: venv-${{ runner.os }}-python-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            venv-${{ runner.os }}-python-
+
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction
-      #----------------------------------------------
-      #      build docs and deploy to docs
-      #----------------------------------------------
-      - name: Build docs
         run: |
-          source $VENV
+          poetry install --no-interaction --no-root
+
+      - name: Inject build timestamp
+        run: |
+          BUILD_DATE=$(date -u +"%Y-%m-%d %H:%M UTC")
+          echo "Build timestamp: $BUILD_DATE"
+          echo "<div style='text-align:center;margin-top:50px;color:gray;font-size:smaller;'>Last updated: $BUILD_DATE</div>" > docs/_build_timestamp.html
+        shell: bash
+
+      - name: Build Docs
+        run: |
+          source .venv/bin/activate
           cd docs
-          make html
-      - name: Deploy docs
-        uses: peaceiris/actions-gh-pages@v4
+          make clean html
+          # Inject build timestamp into all HTML files
+          find build/html -name "*.html" -exec sed -i '/<\/body>/i <!-- Build Timestamp -->\n$(cat _build_timestamp.html)' {} \;
+        env:
+          VIRTUAL_ENV: .venv
+
+      - name: Deploy Docs
         if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          publish_dir: ./docs/build/html
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/build/html
           publish_branch: docs
-          user_name: 'github-actions'
-          user_email: 'github-actions@github.com'
+          user_name: github-actions
+          user_email: github-actions@github.com
