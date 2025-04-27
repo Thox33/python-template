@@ -22,8 +22,8 @@ jobs:
 
           echo "Replacing 'boilerplate-python' with '${PROJECT_NAME}' and 'boilerplate_python' with '${PROJECT_NAME_SNAKE_CASE}' in relevant files"
 
-          find . -type f \( -name "*.py" -o -name "*.md" -o -name "*.rst" -o -name "*.txt" -o -name "*.yml" -o -name "*.yaml" \) -not -path "./.git/*" -exec sed -i "s/boilerplate-python/${PROJECT_NAME}/g" {} +
-          find . -type f \( -name "*.py" -o -name "*.md" -o -name "*.rst" -o -name "*.txt" -o -name "*.yml" -o -name "*.yaml" \) -not -path "./.git/*" -exec sed -i "s/boilerplate_python/${PROJECT_NAME_SNAKE_CASE}/g" {} +
+          find . -type f -not -path "./.git/*" -exec sed -i "s/boilerplate-python/${PROJECT_NAME}/g" {} +
+          find . -type f -not -path "./.git/*" -exec sed -i "s/boilerplate_python/${PROJECT_NAME_SNAKE_CASE}/g" {} +
 
           if [ -d "boilerplate_python" ]; then
             mv boilerplate_python "${PROJECT_NAME_SNAKE_CASE}"
