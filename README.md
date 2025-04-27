@@ -35,6 +35,7 @@
 
    3.1 **Via Actions**
     1. Go to **Actions** → **Setup Repository** → **Run workflow**
+       - This will change all occurrences of `boilerplate_python` and `boilerplate-python` to the project name.
        - This will create the `main` branch from `develop`.
        - This will configure all branch protection rules, protected tags and project settings.
 
@@ -73,6 +74,8 @@
       - ☑️ "Always suggest updating pull request branches"
       - ☑️ "Allow auto-merge"
       - ☑️ "Automatically delete head branches"
+   5. **Rename Boilerplate Files**
+      - Change instances of `boilerplate_python` and `boilerplate-python` in all relevant files and filenames.
 
 4. **Dependabot** (optional)
    - Enable Dependabot in the **Security** tab of your repository.
@@ -80,8 +83,5 @@
 5. **Set up Semantic Release** (optional)
    - Ensure the appropriate configuration in the workflow files.
 
-6. **Rename Boilerplate Files**
-   - Change instances of `boilerplate_python` and `boilerplate-python` in all relevant files and filenames.
-
-7. **Update README**
+6. **Update README**
    - Update this README file with the correct information, using the `README_EXAMPLE.md` file as a guide.
