@@ -24,7 +24,7 @@ TODO: Configuration information
 
 Make sure to install:
 
-- Python >= 3.10
+- Python >= 3.11
 - Poetry >= 1.4.0
 
 ### Install

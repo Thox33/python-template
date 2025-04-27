@@ -29,7 +29,7 @@ See the .pre-commit-config.yaml file for more.
 Type hints
 ==========
 
-As Python itself is a dynamically typed language, we use their `typing <https://docs.python.org/3.10/library/typing.html>`_ support to add type hints to our code.
+As Python itself is a dynamically typed language, we use their `typing <https://docs.python.org/3.11/library/typing.html>`_ support to add type hints to our code.
 This helps to understand the code and to find bugs.
 
 To enforce type hints we use `mypy <https://mypy.readthedocs.io/en/stable/>`_. Its configured to be strict and to fail on any type hint error.

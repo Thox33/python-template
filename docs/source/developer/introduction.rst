@@ -9,7 +9,7 @@ Prerequisites
 
 Make sure to install:
 
-- Python >= 3.10
+- Python >= 3.11
 - Poetry >= 1.4.0
 
 See `Poetry documentation <https://python-poetry.org/docs/>`_ for more information.
