@@ -9,8 +9,8 @@ from boilerplate_python import __version__ as boilerplate_python_version
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "Boilerplate Python"
-copyright = "2023, Helmer GmbH"
-author = "Helmer GmbH"
+copyright = "2025, Thorge Becker"
+author = "Thorge Becker"
 version = boilerplate_python_version
 release = boilerplate_python_version
 language = "en"
