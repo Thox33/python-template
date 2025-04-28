@@ -6,13 +6,12 @@ on:
   pull_request:
     paths:
       - 'docs/**'
-  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       pages: write
       id-token: write
     concurrency:
@@ -25,13 +24,45 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Debug GitHub context
+      - name: Configure GitHub Pages via API
+        if: github.ref == 'refs/heads/main'
         run: |
+          echo "Configuring GitHub Pages to use GitHub Actions..."
+          RESPONSE=$(curl -s -X PUT \
+            -H "Authorization: token ${{ secrets.GH_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pages \
+            -d '{"source":{"branch":"main","path":"/"},"build_type":"workflow"}')
+          echo "API Response: $RESPONSE"
+
+      - name: Detailed GitHub Pages Debug
+        run: |
+          echo "=== GitHub Context ==="
           echo "Repository: ${{ github.repository }}"
           echo "Actor: ${{ github.actor }}"
-          echo "Event name: ${{ github.event_name }}"
           echo "Ref: ${{ github.ref }}"
-          echo "Workflow: ${{ github.workflow }}"
+
+          echo "=== GitHub Pages API Status ==="
+          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/pages)
+          echo "Pages API Status Code: $STATUS_CODE"
+
+          if [ "$STATUS_CODE" != "404" ]; then
+            echo "Pages info:"
+            curl -s \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/${{ github.repository }}/pages
+          else
+            echo "GitHub Pages not configured yet"
+          fi
+
+          echo "=== GitHub Token Permissions ==="
+          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/rate_limit | grep -o '"scopes": "[^"]*"' || echo "Could not retrieve token scopes"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -74,49 +105,29 @@ jobs:
         env:
           VIRTUAL_ENV: .venv
 
-      # Option 1: Direktes Veröffentlichen auf gh-pages Branch
-      - name: Deploy to GitHub Pages via gh-pages branch
-        if: github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: docs/build/html
-          publish_branch: gh-pages
-          user_name: github-actions
-          user_email: github-actions@github.com
-
-      # Option 2: GitHub Pages Workflow (falls Option 1 fehlschlägt)
-      - name: Debug Pages API Access (nur für Logging)
-        if: github.ref == 'refs/heads/main'
-        run: |
-          # Wir verwenden dryrun, um nur die API-Anfrage zu testen ohne tatsächliche Änderungen
-          echo "Testing GitHub Pages API access..."
-          curl -s -o /dev/null -w "Status Code: %{http_code}\n" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/repos/${{ github.repository }}
-          echo "GitHub Token Permissions (sollte admin:repo_hook und repo beinhalten):"
-          curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-               -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/rate_limit | grep -o '"scopes": "[^"]*"'
-
       - name: Setup Pages
-        if: github.ref == 'refs/heads/main'
-        continue-on-error: true
         uses: actions/configure-pages@v4
         with:
           enablement: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+          static_site_generator: "sphinx"
 
       - name: Upload artifact
-        if: github.ref == 'refs/heads/main'
-        continue-on-error: true
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'docs/build/html'
 
       - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/main'
-        continue-on-error: true
         id: deployment
+        if: github.ref == 'refs/heads/main'
         uses: actions/deploy-pages@v4
+
+      - name: Report Deployment Result
+        if: always() && github.ref == 'refs/heads/main'
+        run: |
+          if [ "${{ steps.deployment.outcome }}" == "success" ]; then
+            echo "Deployment successful!"
+          else
+            echo "Deployment failed."
+            echo "Manual configuration may be required. Please go to your repository settings,"
+            echo "navigate to 'Pages' section, and set the source to 'GitHub Actions'."
+          fi
