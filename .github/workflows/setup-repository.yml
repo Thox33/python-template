@@ -17,13 +17,20 @@ jobs:
 
       - name: Replace boilerplate project names
         run: |
-          PROJECT_NAME="${{ github.event.repository.name }}"
-          PROJECT_NAME_SNAKE_CASE="${PROJECT_NAME//-/_}"
+          PROJECT_NAME_RAW="${{ github.event.repository.name }}"
+          echo "Original project name: ${PROJECT_NAME_RAW}"
+          PROJECT_NAME_NORMALIZED="$(echo "${PROJECT_NAME_RAW}" | sed -E 's/[_-]+/ /g' | sed -E 's/([a-z])([A-Z])/\1 \2/g' | tr '[:upper:]' '[:lower:]')"
+          echo "Normalized project name: ${PROJECT_NAME_NORMALIZED}"
 
-          echo "Replacing 'boilerplate-python' with '${PROJECT_NAME}' and 'boilerplate_python' with '${PROJECT_NAME_SNAKE_CASE}' in relevant files"
+          PROJECT_NAME_KEBAB_CASE="$(echo "${PROJECT_NAME_NORMALIZED}" | tr ' ' '-' )"
+          PROJECT_NAME_SNAKE_CASE="$(echo "${PROJECT_NAME_NORMALIZED}" | tr ' ' '_' )"
+          PROJECT_NAME_TITLE_CASE="$(echo "${PROJECT_NAME_NORMALIZED}" | sed -E 's/(^| )([a-z])/\1\u\2/g')"
 
-          find . -type f -not -path "./.git/*" -exec sed -i "s/boilerplate-python/${PROJECT_NAME}/g" {} +
+          echo "Replacing placeholders in relevant files"
+
+          find . -type f -not -path "./.git/*" -exec sed -i "s/boilerplate-python/${PROJECT_NAME_KEBAB_CASE}/g" {} +
           find . -type f -not -path "./.git/*" -exec sed -i "s/boilerplate_python/${PROJECT_NAME_SNAKE_CASE}/g" {} +
+          find . -type f -not -path "./.git/*" -exec sed -i "s/Boilerplate Python/${PROJECT_NAME_TITLE_CASE}/g" {} +
 
           if [ -d "boilerplate_python" ] && [ "$PROJECT_NAME_SNAKE_CASE" != "boilerplate_python" ]; then
             echo "Renaming directory 'boilerplate_python' to '$PROJECT_NAME_SNAKE_CASE'"
