@@ -10,8 +10,12 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     concurrency:
-      group: docs-deploy
+      group: pages
       cancel-in-progress: true
 
     steps:
@@ -61,12 +65,15 @@ jobs:
         env:
           VIRTUAL_ENV: .venv
 
-      - name: Deploy Docs
-        if: github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GH_TOKEN }}
-          publish_dir: docs/build/html
-          publish_branch: docs
-          user_name: github-actions
-          user_email: github-actions@github.com
+          path: 'docs/build/html'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        if: github.ref == 'refs/heads/main'
+        uses: actions/deploy-pages@v4
