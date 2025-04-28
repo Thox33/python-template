@@ -73,6 +73,6 @@ You have the following ways to run a live reloading server to develop this docum
 - Run `docker compose up --build docs`
 
 Both will run a webserver listing on http://localhost:5500 and will automatically rebuild the documentation (and
-reloading the website inside your browser) if a file in docs or newtron_cdc directory changes.
+reloading the website inside your browser) if a file in docs or boilerplate_python directory changes.
 
 (Third option would be to manually call `make html` or `./make.bat html` inside the docs directory.)

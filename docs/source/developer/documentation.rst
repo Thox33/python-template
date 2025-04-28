@@ -39,7 +39,7 @@ Use one of the following options to build the documentation:
     docker compose up --build docs
 
 Both will run a webserver listing on http://localhost:5500 and will automatically rebuild the documentation (and
-reloading the website inside your browser) if a file in docs or newtron_cdc directory changes.
+reloading the website inside your browser) if a file in docs or boilerplate_python directory changes.
 
 Build
 =====
