@@ -309,34 +309,3 @@ jobs:
           EOF
 
           echo "Repository settings updated successfully"
-
-          echo "🔍 Configuring GitHub Pages for repo: $REPO"
-
-          echo "⌛ Patching 'build_type' to 'workflow'..."
-          cat > pages_patch.json << JSON
-          {
-            "build_type": "workflow"
-          }
-          JSON
-
-          echo "→ PATCH payload:"
-          cat pages_patch.json
-          echo
-
-          set +e
-          PATCH_OUT=$(gh api --method PATCH /repos/"$REPO"/pages --input pages_patch.json 2>&1)
-          PATCH_STATUS=$?
-          set -e
-
-          echo "→ PATCH /pages status: $PATCH_STATUS"
-          echo "$PATCH_OUT"
-          echo
-
-          if [ $PATCH_STATUS -eq 0 ]; then
-            echo "✔ Successfully switched to GitHub Actions (build_type=workflow)"
-          else
-            echo "❌ Failed to patch Pages (exit $PATCH_STATUS)"
-            exit $PATCH_STATUS
-          fi
-
-          echo "🚀 Done!"
