@@ -26,7 +26,7 @@ jobs:
 
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
         with:
           token: ${{ secrets.GH_TOKEN }}
           enablement: true
@@ -114,7 +114,7 @@ jobs:
           VIRTUAL_ENV: .venv
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
         with:
           enablement: true
           static_site_generator: "sphinx"
