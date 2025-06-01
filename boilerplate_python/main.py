@@ -5,7 +5,7 @@ import signal
 import sys
 import threading
 from types import FrameType
-from typing import Optional
+
 
 # If uvloop is installed, use it to run async loop
 try:
@@ -52,7 +52,7 @@ def main() -> None:
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
-    def handle_exit(signal_number: int, frame: Optional[FrameType]) -> None:
+    def handle_exit(signal_number: int, frame: FrameType | None) -> None:
         logger.info(
             "Received signal %s. Sending stop signal to application...",
             signal.Signals(signal_number).name,
