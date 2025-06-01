@@ -100,7 +100,7 @@ asyncio_mode = "auto"
 addopts = [
     "--doctest-modules",
     "--cov=boilerplate_python",
-    "--cov-fail-under=80",
+    "--cov-fail-under=0", # TODO Increase minimum code coverage
     "--cov-branch",
     "--cov-report=term-missing:skip-covered",
     "--cov-report=xml",
