@@ -41,10 +41,48 @@ ruff = "^0.11.8"
 requires = ["poetry-core>=1.6.1"]
 build-backend = "poetry.core.masonry.api"
 
+# Pytest Configuration
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+addopts = [
+    "--doctest-modules",
+    "--cov=boilerplate_python",
+    "--cov-fail-under=20",
+    "--cov-branch",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=xml"
+]
+
+# MyPy Configuration
+[tool.mypy]
+follow_imports = "silent"
+strict_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+disallow_any_generics = true
+check_untyped_defs = true
+no_implicit_reexport = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+exclude = ["docs"]
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+ignore_errors = true
+
+# Pydantic MyPy Plugin
+[tool.pydantic-mypy]
+init_forbid_extra = true
+init_typed = true
+warn_required_dynamic_aliases = true
+warn_untyped_fields = true
+
+# Bandit Configuration
 [tool.bandit]
 exclude_dirs = ["docs", "tests"]
 skips = []
 
+# Semantic Release Configuration
 [tool.semantic_release]
 build_command = "source $VENV && poetry build && cd .."
 commit_author = "github-actions <github-actions@github.com>"
