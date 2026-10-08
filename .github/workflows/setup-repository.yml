@@ -10,7 +10,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout develop
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: develop
           token: ${{ secrets.GH_TOKEN }}
@@ -83,7 +83,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Authenticate GitHub CLI
         run: gh auth login --with-token <<< "${{ secrets.GH_TOKEN }}"
       - name: Add missing labels
@@ -111,7 +111,7 @@ jobs:
     steps:
       # 1) Checkout
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # 2) Install GH CLI & jq
       - name: Install GitHub CLI & jq
