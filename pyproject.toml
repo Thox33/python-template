@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "boilerplate-python"
-version = "0.0.0"
+version = "0.1.0-rc.1+develop.20261008"
 description = ""
 authors = ["Thorge Becker <ThorgeBecker@t-online.de>"]
 readme = "README.md"
