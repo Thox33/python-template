@@ -1,6 +1,6 @@
 name: Code-Styles
 on:
-  pull_request_target:
+  pull_request:
     branches: [main, develop]
 jobs:
   code-style:
