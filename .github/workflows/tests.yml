@@ -1,6 +1,6 @@
 name: Tests
 on:
-  pull_request_target:
+  pull_request:
     branches: [main, develop]
 jobs:
   test:
@@ -41,8 +41,9 @@ jobs:
       # install dependencies if cache does not exist
       #----------------------------------------------
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction
+        run: poetry install --extras performance --no-interaction
+      - name: Check optional performance extra
+        run: poetry run python -c "import boilerplate_python.main"
       #----------------------------------------------
       #              run build test
       #----------------------------------------------
