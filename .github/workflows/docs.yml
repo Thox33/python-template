@@ -73,7 +73,7 @@ jobs:
                https://api.github.com/rate_limit | grep -o '"scopes": "[^"]*"' || echo "Could not retrieve token scopes"
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: '3.11'
 
