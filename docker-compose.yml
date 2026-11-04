@@ -4,7 +4,7 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
     volumes:
-      - ./boilerplate_python:/usr/src/app/boilerplate_python
+      - ./src:/usr/src/app/src
       - ./tests:/usr/src/app/tests
       - ./README.md:/usr/src/app/README.md
       - ./pyproject.toml:/usr/src/app/pyproject.toml

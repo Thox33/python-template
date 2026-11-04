@@ -4,7 +4,7 @@ version = "0.1.0-rc.1+develop.20261104"
 description = ""
 authors = ["Thorge Becker <ThorgeBecker@t-online.de>"]
 readme = "README.md"
-packages = [{ include = "boilerplate_python" }]
+packages = [{ include = "boilerplate_python", from = "src" }]
 
 [tool.poetry.scripts]
 template-python = "boilerplate_python.main:main"
@@ -120,6 +120,8 @@ no_implicit_reexport = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
 plugins = ["pydantic.mypy"]
+files = ["src", "tests"]
+mypy_path = "src"
 
 [[tool.mypy.overrides]]
 module = "tests.*"
@@ -139,7 +141,8 @@ skips = ["B101"]  # Skip assert_used test
 
 # Coverage Configuration
 [tool.coverage.run]
-source = ["boilerplate_python"]
+source = ["src/boilerplate_python"]
+relative_files = true
 omit = [
     "*/tests/*",
     "*/test_*.py",
@@ -167,7 +170,7 @@ commit_author = "github-actions <github-actions@github.com>"
 commit_message = "chore(release): releasing version {version}  [skip ci]"
 major_on_zero = true
 version_variables = [
-    "boilerplate_python/__init__.py:__version__"
+    "src/boilerplate_python/__init__.py:__version__"
 ]
 version_toml = [
     "pyproject.toml:tool.poetry.version"

@@ -14,7 +14,7 @@ RUN curl -sSL 'https://install.python-poetry.org' | POETRY_HOME=/home/nonroot/po
 RUN /home/nonroot/poetry/bin/poetry --version
 
 # Install dependencies
-RUN mkdir boilerplate_python && touch boilerplate_python/__init__.py
+RUN mkdir -p src/boilerplate_python && touch src/boilerplate_python/__init__.py
 COPY --chown=nonroot:nonroot README.md ./README.md
 COPY --chown=nonroot:nonroot poetry.lock ./poetry.lock
 COPY --chown=nonroot:nonroot pyproject.toml ./pyproject.toml
