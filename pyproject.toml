@@ -190,6 +190,6 @@ exclude_commit_patterns = [
     "^Merge pull request",
     "^Merge remote",
     "^Merge branch",
-    "^chore(release):.*",
-    "^build(deps-dev):.*"
+    '^chore\(release\):.*',
+    '^build\(deps-dev\):.*'
 ]
