@@ -62,17 +62,3 @@ or run in watch mode:
 ```bash
 poetry run pytest-watch -n
 ```
-
-## Documentation
-
-We are using Sphinx with the ReadTheDocs html theme.
-
-You have the following ways to run a live reloading server to develop this documentation
-
-- Run `poetry run python docs/docs_livereload.py`
-- Run `docker compose up --build docs`
-
-Both will run a webserver listing on http://localhost:5500 and will automatically rebuild the documentation (and
-reloading the website inside your browser) if a file in docs or boilerplate_python directory changes.
-
-(Third option would be to manually call `make html` or `./make.bat html` inside the docs directory.)
