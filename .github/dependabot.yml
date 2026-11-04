@@ -11,12 +11,26 @@ updates:
         dependency-type: "development"
       production:
         dependency-type: "production"
+  - package-ecosystem: "pre-commit"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 100
+    target-branch: 'develop'
+    groups:
+      pre-commit:
+        patterns:
+          - "*"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 100
     target-branch: 'develop'
+    groups:
+      github-actions:
+        patterns:
+          - "*"
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
