@@ -81,7 +81,6 @@ lines-after-imports = 2
 "tests/**/*.py" = [
     "S101",  # asserts in tests are fine
     "S106",  # hardcoded passwords in tests are fine
-    "ARG",   # unused function arguments in tests are fine
 ]
 
 [tool.ruff.format]
