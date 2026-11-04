@@ -4,7 +4,7 @@ version = "1.0.0-rc.1+develop.20261104"
 description = ""
 authors = [{ name = "Thorge Becker", email = "ThorgeBecker@t-online.de" }]
 readme = "README.md"
-requires-python = ">=3.11,<3.15"
+requires-python = ">=3.11,<3.16"
 dependencies = [
     "pydantic>=2.14.2,<3",
 ]
@@ -159,7 +159,12 @@ exclude_lines = [
 # Semantic Release Configuration
 [tool.semantic_release]
 allow_zero_version = true
-build_command = "uv build"
+# uv.lock records the project's own version, so stamping a new version into
+# pyproject.toml leaves the lock stale and every later `uv sync --locked` fails.
+# Refreshing it here and listing it under assets puts the updated lock into the
+# release commit itself.
+build_command = "uv lock && uv build"
+assets = ["uv.lock"]
 commit_author = "github-actions <github-actions@github.com>"
 commit_message = "chore(release): releasing version {version}  [skip ci]"
 major_on_zero = true

@@ -1,4 +1,4 @@
-FROM python:3.14-alpine3.24
+FROM python:3.15-alpine3.24
 
 # uv comes from its own published image rather than a curl|sh installer, so the
 # version is pinned, verifiable and bumpable by dependabot.
