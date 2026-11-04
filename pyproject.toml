@@ -6,7 +6,7 @@ authors = [{ name = "Thorge Becker", email = "ThorgeBecker@t-online.de" }]
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
 dependencies = [
-    "pydantic>=1.10.23,<2",
+    "pydantic>=2.14.2,<3",
 ]
 
 [project.optional-dependencies]
@@ -30,7 +30,7 @@ dev = [
     "pytest-mock==3.17.0",
     "pytest-sugar==1.1.1",
     "pytest-watch==4.2.0",
-    "python-semantic-release==8.0.8",
+    "python-semantic-release==10.7.0",
     "ruff==0.17.3",
 ]
 
@@ -129,12 +129,11 @@ mypy_path = "src"
 module = "tests.*"
 ignore_errors = true
 
-# Pydantic MyPy Plugin (für v1)
+# Pydantic MyPy Plugin
 [tool.pydantic-mypy]
 init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
-warn_untyped_fields = true
 
 # Bandit Configuration
 [tool.bandit]
@@ -167,6 +166,7 @@ exclude_lines = [
 
 # Semantic Release Configuration
 [tool.semantic_release]
+allow_zero_version = true
 build_command = "uv build"
 commit_author = "github-actions <github-actions@github.com>"
 commit_message = "chore(release): releasing version {version}  [skip ci]"
