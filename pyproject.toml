@@ -34,8 +34,16 @@ dev = [
 ]
 
 [build-system]
-requires = ["uv_build>=0.12.22,<0.14"]
+requires = ["uv_build>=0.13.7,<0.14"]
 build-backend = "uv_build"
+
+# astral-sh/setup-uv reads required-version from here, so CI installs a matching
+# uv instead of falling back to whatever is latest that day. That keeps the uv
+# in CI, in the container image and on a developer machine on the same minor,
+# which matters because uv.lock is validated with `uv sync --locked`: a uv from
+# a different minor can consider the committed lock stale.
+[tool.uv]
+required-version = ">=0.13.7,<0.14"
 
 # Ruff Configuration
 [tool.ruff]
