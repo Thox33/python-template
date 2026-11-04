@@ -71,7 +71,7 @@ dependencies = [
 
 [package.optional-dependencies]
 performance = [
-    { name = "uvloop" },
+    { name = "uvloop", marker = "sys_platform != 'win32'" },
 ]
 
 [package.dev-dependencies]
@@ -94,7 +94,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=1.10.23,<2" },
-    { name = "uvloop", marker = "extra == 'performance'", specifier = ">=0.23.0,<0.24" },
+    { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'performance'", specifier = ">=0.23.0,<0.24" },
 ]
 provides-extras = ["performance"]
 

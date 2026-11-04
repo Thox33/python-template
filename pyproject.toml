@@ -10,7 +10,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-performance = ["uvloop>=0.23.0,<0.24"]
+# uvloop publishes no Windows wheels and refuses to build there, so the extra
+# has to stay out of the resolution on win32.
+performance = ["uvloop>=0.23.0,<0.24; sys_platform != 'win32'"]
 
 [project.scripts]
 template-python = "boilerplate_python.main:main"
