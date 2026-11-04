@@ -81,7 +81,7 @@ wheels = [
 
 [[package]]
 name = "boilerplate-python"
-version = "0.1.0rc1+develop.20261104"
+version = "1.0.0rc1+develop.20261104"
 source = { editable = "." }
 dependencies = [
     { name = "pydantic" },
