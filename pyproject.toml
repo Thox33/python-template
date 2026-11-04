@@ -19,7 +19,6 @@ template-python = "boilerplate_python.main:main"
 
 [dependency-groups]
 dev = [
-    "bandit==1.9.4",
     "mypy==2.4.1",
     "pre-commit==4.7.0",
     "pyfakefs==6.2.0",
@@ -133,11 +132,6 @@ ignore_errors = true
 init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
-
-# Bandit Configuration
-[tool.bandit]
-exclude_dirs = ["tests"]
-skips = ["B101"]  # Skip assert_used test
 
 # Coverage Configuration
 [tool.coverage.run]
