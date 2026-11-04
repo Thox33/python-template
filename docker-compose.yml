@@ -8,4 +8,4 @@ services:
       - ./tests:/usr/src/app/tests
       - ./README.md:/usr/src/app/README.md
       - ./pyproject.toml:/usr/src/app/pyproject.toml
-    command: pytest-watch -n -p
+    command: ptw --now .
