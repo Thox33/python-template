@@ -76,6 +76,7 @@
       - ☑️ "Automatically delete head branches"
    5. **Rename Boilerplate Files**
       - Change instances of `boilerplate_python` and `boilerplate-python` in all relevant files and filenames.
+      - Rename the package directory `src/boilerplate_python` to match the new snake_case name.
 
 4. **Dependabot** (optional)
    - Enable Dependabot in the **Security** tab of your repository.

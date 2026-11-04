@@ -32,11 +32,11 @@ jobs:
           find . -type f -not -path "./.git/*" -exec sed -i "s/boilerplate_python/${PROJECT_NAME_SNAKE_CASE}/g" {} +
           find . -type f -not -path "./.git/*" -exec sed -i "s/Boilerplate Python/${PROJECT_NAME_TITLE_CASE}/g" {} +
 
-          if [ -d "boilerplate_python" ] && [ "$PROJECT_NAME_SNAKE_CASE" != "boilerplate_python" ]; then
-            echo "Renaming directory 'boilerplate_python' to '$PROJECT_NAME_SNAKE_CASE'"
-            mv "boilerplate_python" "$PROJECT_NAME_SNAKE_CASE"
+          if [ -d "src/boilerplate_python" ] && [ "$PROJECT_NAME_SNAKE_CASE" != "boilerplate_python" ]; then
+            echo "Renaming directory 'src/boilerplate_python' to 'src/$PROJECT_NAME_SNAKE_CASE'"
+            mv "src/boilerplate_python" "src/$PROJECT_NAME_SNAKE_CASE"
           else
-            echo "Skipping rename, either 'boilerplate_python' does not exist or the target name is the same."
+            echo "Skipping rename, either 'src/boilerplate_python' does not exist or the target name is the same."
           fi
 
           if git diff --quiet; then

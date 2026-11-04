@@ -20,11 +20,4 @@ repos:
     rev: v2.4.1
     hooks:
       - id: mypy
-        additional_dependencies: ["pydantic<2"]
-
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.9.4
-    hooks:
-      - id: bandit
-        args: [-c, pyproject.toml]
-        additional_dependencies: ["bandit[toml]"]
+        additional_dependencies: ["pydantic>=2.14.2,<3"]

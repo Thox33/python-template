@@ -1,40 +1,41 @@
-[tool.poetry]
+[project]
 name = "boilerplate-python"
 version = "0.1.0-rc.1+develop.20261104"
 description = ""
-authors = ["Thorge Becker <ThorgeBecker@t-online.de>"]
+authors = [{ name = "Thorge Becker", email = "ThorgeBecker@t-online.de" }]
 readme = "README.md"
-packages = [{ include = "boilerplate_python" }]
+requires-python = ">=3.11,<3.15"
+dependencies = [
+    "pydantic>=2.14.2,<3",
+]
 
-[tool.poetry.scripts]
+[project.optional-dependencies]
+# uvloop publishes no Windows wheels and refuses to build there, so the extra
+# has to stay out of the resolution on win32.
+performance = ["uvloop>=0.23.0,<0.24; sys_platform != 'win32'"]
+
+[project.scripts]
 template-python = "boilerplate_python.main:main"
 
-[tool.poetry.extras]
-performance = ["uvloop"]
-
-[tool.poetry.dependencies]
-python = ">=3.11, <3.14"
-pydantic = "^1.10.23"
-uvloop = { version = "^0.23.0", optional = true }
-
-[tool.poetry.group.dev.dependencies]
-pre-commit = "4.7.0"
-mypy = "2.4.1"
-pytest = "9.2.0"
-pytest-asyncio = "1.4.1"
-pytest-cov = "7.1.0"
-python-semantic-release = "8.0.8"
-pytest-watch = "4.2.0"
-pytest-sugar = "1.1.1"
-pytest-icdiff = "0.9"
-bandit = "1.9.4"
-pytest-mock = "3.17.0"
-pyfakefs = "6.2.0"
-ruff = "0.17.3"
+[dependency-groups]
+dev = [
+    "mypy==2.4.1",
+    "pre-commit==4.7.0",
+    "pyfakefs==6.2.0",
+    "pytest==9.2.0",
+    "pytest-asyncio==1.4.1",
+    "pytest-cov==7.1.0",
+    "pytest-icdiff==0.9",
+    "pytest-mock==3.17.0",
+    "pytest-sugar==1.1.1",
+    "pytest-watcher==0.6.3",
+    "python-semantic-release==10.7.0",
+    "ruff==0.17.3",
+]
 
 [build-system]
-requires = ["poetry-core>=1.6.1"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.12.22,<0.14"]
+build-backend = "uv_build"
 
 # Ruff Configuration
 [tool.ruff]
@@ -79,7 +80,6 @@ lines-after-imports = 2
 "tests/**/*.py" = [
     "S101",  # asserts in tests are fine
     "S106",  # hardcoded passwords in tests are fine
-    "ARG",   # unused function arguments in tests are fine
 ]
 
 [tool.ruff.format]
@@ -120,30 +120,26 @@ no_implicit_reexport = true
 disallow_untyped_defs = true
 ignore_missing_imports = true
 plugins = ["pydantic.mypy"]
+files = ["src", "tests"]
+mypy_path = "src"
 
 [[tool.mypy.overrides]]
 module = "tests.*"
 ignore_errors = true
 
-# Pydantic MyPy Plugin (für v1)
+# Pydantic MyPy Plugin
 [tool.pydantic-mypy]
 init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
-warn_untyped_fields = true
-
-# Bandit Configuration
-[tool.bandit]
-exclude_dirs = ["tests"]
-skips = ["B101"]  # Skip assert_used test
 
 # Coverage Configuration
 [tool.coverage.run]
-source = ["boilerplate_python"]
+source = ["src/boilerplate_python"]
+relative_files = true
 omit = [
     "*/tests/*",
     "*/test_*.py",
-    "*/__init__.py",
 ]
 
 [tool.coverage.report]
@@ -162,15 +158,16 @@ exclude_lines = [
 
 # Semantic Release Configuration
 [tool.semantic_release]
-build_command = "source $VENV && poetry build && cd .."
+allow_zero_version = true
+build_command = "uv build"
 commit_author = "github-actions <github-actions@github.com>"
 commit_message = "chore(release): releasing version {version}  [skip ci]"
 major_on_zero = true
 version_variables = [
-    "boilerplate_python/__init__.py:__version__"
+    "src/boilerplate_python/__init__.py:__version__"
 ]
 version_toml = [
-    "pyproject.toml:tool.poetry.version"
+    "pyproject.toml:project.version"
 ]
 
 [tool.semantic_release.branches.stable]
@@ -192,6 +189,6 @@ exclude_commit_patterns = [
     "^Merge pull request",
     "^Merge remote",
     "^Merge branch",
-    "^chore(release):.*",
-    "^build(deps-dev):.*"
+    '^chore\(release\):.*',
+    '^build\(deps-dev\):.*'
 ]

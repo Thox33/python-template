@@ -7,60 +7,39 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       #----------------------------------------------
-      #   check-out repo and set-up python
+      #   check-out repo and set-up python via uv
       #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - name: Set up python
-        id: setup-python
-        uses: actions/setup-python@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.3.3
         with:
-          python-version: 3.11
+          enable-cache: true
+          python-version: "3.11"
       #----------------------------------------------
-      #        install & configure poetry
+      #            load pre-commit cache
       #----------------------------------------------
-      - name: Install and configure Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
-      #----------------------------------------------
-      #       load cached venv if cache exists
-      #----------------------------------------------
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v6
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
       - name: Load pre-commit cache
         uses: actions/cache@v6
-        if: startsWith(runner.os, 'Linux')
         with:
           path: ~/.cache/pre-commit
-          key: pre-commit-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('.pre-commit-config.yaml') }}
-          restore-keys: pre-commit-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
+          restore-keys: pre-commit-${{ runner.os }}-
       #----------------------------------------------
-      # install dependencies if cache does not exist
+      # install dependencies (--locked fails the run
+      # when uv.lock is out of date)
       #----------------------------------------------
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction
+        run: uv sync --locked --all-extras
       #----------------------------------------------
       #  run pre-commit and tests
       #----------------------------------------------
       - name: Run pre-commit
-        run: |
-          source $VENV
-          pre-commit run --all-files
+        run: uv run --no-sync pre-commit run --all-files
       - name: Run tests
-        run: |
-          source $VENV
-          pytest
+        run: uv run --no-sync pytest
       #- name: Run SonarCloud scan
       #  uses: SonarSource/sonarcloud-github-action@master
       #  env:
@@ -72,43 +51,24 @@ jobs:
     if: ${{ !contains(github.event.head_commit.message, 'chore(release):') }}
     steps:
       #----------------------------------------------
-      #   check-out repo and set-up python
+      #   check-out repo and set-up python via uv
       #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
-      - name: Set up python
-        id: setup-python
-        uses: actions/setup-python@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@v10.3.3
         with:
-          python-version: 3.11
+          enable-cache: true
+          python-version: "3.11"
       #----------------------------------------------
-      #        install & configure poetry
-      #----------------------------------------------
-      - name: Install and configure Poetry
-        uses: snok/install-poetry@v1
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
-      #----------------------------------------------
-      #       load cached venv if cache exists
-      #----------------------------------------------
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v6
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-
-      #----------------------------------------------
-      # install dependencies if cache does not exist
+      # install dependencies (--locked fails the run
+      # when uv.lock is out of date)
       #----------------------------------------------
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction
+        run: uv sync --locked
       #----------------------------------------------
       #              build and release
       #----------------------------------------------
@@ -118,10 +78,9 @@ jobs:
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
-          source $VENV
-          TAG=$(semantic-release version --print)
-          semantic-release version
-          semantic-release publish --tag "v${TAG}"
+          TAG=$(uv run --no-sync semantic-release version --print)
+          uv run --no-sync semantic-release version
+          uv run --no-sync semantic-release publish --tag "v${TAG}"
       #----------------------------------------------
       #        Create sync PR main→develop
       #----------------------------------------------

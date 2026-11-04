@@ -24,15 +24,23 @@ TODO: Configuration information
 
 Make sure to install:
 
-- Python >= 3.11
-- Poetry >= 1.4.0
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) >= 0.12
+
+uv downloads and manages the Python interpreter itself, so a separate Python
+installation is not required. Supported versions are 3.11 up to 3.14.
 
 ### Install
 
 Run:
 
 ```bash
-poetry install
+uv sync
+```
+
+To include the optional `performance` extra (uvloop, not available on Windows):
+
+```bash
+uv sync --extra performance
 ```
 
 ### Linting and typechecking
@@ -40,13 +48,13 @@ poetry install
 Setup pre-commit hooks:
 
 ```bash
-poetry run pre-commit install
+uv run pre-commit install
 ```
 
 Run on all files:
 
 ```bash
-poetry run pre-commit run -a
+uv run pre-commit run -a
 ```
 
 ### Testing
@@ -54,11 +62,11 @@ poetry run pre-commit run -a
 Run tests with coverage report:
 
 ```bash
-poetry run pytest
+uv run pytest
 ```
 
 or run in watch mode:
 
 ```bash
-poetry run pytest-watch -n
+uv run ptw --now .
 ```
